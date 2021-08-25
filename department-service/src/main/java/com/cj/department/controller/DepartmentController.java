@@ -20,7 +20,7 @@ public class DepartmentController {
         this.service = service;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public List<Department> findAllDepartments() {
         log.info("inside findAllDepartments");
         return service.getDepartments();
@@ -34,7 +34,7 @@ public class DepartmentController {
     }
 
 
-    @PostMapping("/")
+    @PostMapping("")
     public Department createDepartment(@RequestBody Department department) {
         log.info("inside createDepartment");
         return service.saveDepartment(department);

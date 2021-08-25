@@ -1,0 +1,13 @@
+server:
+  port: 9096
+
+spring:
+  application:
+    name: CONFIG-SERVER
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/chetanchilhate/spring-cloud
+          default-label: main
+          clone-on-start: true

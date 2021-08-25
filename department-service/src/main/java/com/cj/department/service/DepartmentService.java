@@ -12,7 +12,7 @@ import java.util.List;
 @Slf4j
 public class DepartmentService {
 
-    private DepartmentRepository repository;
+    private final DepartmentRepository repository;
 
     @Autowired
     public DepartmentService(DepartmentRepository repository) {
