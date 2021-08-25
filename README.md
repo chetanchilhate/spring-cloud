@@ -1,2 +1,2 @@
 # spring-cloud
-spring cloud api gateway microservices monitoring log aggregation hystrix mysql 
+spring cloud api gateway microservices monitoring log aggregation resilience4j mysql 
