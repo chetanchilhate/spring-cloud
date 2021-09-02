@@ -1,0 +1,49 @@
+import org.openapitools.generator.gradle.plugin.extensions.OpenApiGeneratorGenerateExtension
+
+plugins {
+	id "org.openapi.generator" version "5.1.1"
+	id 'org.springframework.boot' version '2.5.4'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'com.cj'
+version = '0.0.1'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+final def generate = openApiGenerate {
+	generatorName = "spring"
+	configFile = "$rootDir/src/main/resources/java-spring-config.json"
+	inputSpec = "$rootDir/src/main/resources/openapi-v3-petstore.yaml"
+	outputDir = "$buildDir/generated"
+	apiPackage = "com.cj.swaggercodegen.api"
+	modelPackage = "com.cj.swaggercodegen.model"
+	invokerPackage = "com.cj.swaggercodegen"
+	skipOperationExample = true
+	generateApiDocumentation = false
+	generateModelDocumentation = false
+}
+generate
+
+compileJava.dependsOn tasks.openApiGenerate
+
+sourceSets.main.java.srcDir "$buildDir/generated/src/main/java"
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	implementation 'io.springfox:springfox-swagger2:3.0.0'
+	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+	implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+	useJUnitPlatform()
+}

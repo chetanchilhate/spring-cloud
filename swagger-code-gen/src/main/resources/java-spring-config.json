@@ -1,0 +1,7 @@
+{
+  "interfaceOnly": true,
+  "dateLibrary": "java8",
+  "serializableModel": true,
+  "skipDefaultInterface": true,
+  "hideGenerationTimestamp": true
+}
