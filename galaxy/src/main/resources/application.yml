@@ -1,0 +1,17 @@
+server:
+  port: 9092
+
+spring:
+  application:
+    name: GALAXY-SERVICE
+  datasource:
+    url: jdbc:mysql://localhost:3306/spring-db
+    username: root
+    password: toor
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    initialization-mode: always
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    open-in-view: false
