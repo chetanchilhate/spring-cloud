@@ -2,43 +2,33 @@ package com.cj.universe.client.cache;
 
 import com.cj.universe.client.dto.Constellation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.time.Duration;
 
 @Component("constellationCache")
-public class ConstellationCache implements CacheService<Constellation, Integer>{
+public class ConstellationCache implements CacheService<Constellation, Integer> {
 
-    private final RedisCacheManager redisCacheManager;
+    private final ReactiveRedisTemplate<String, Constellation> constellationTemplate;
 
     @Autowired
-    public ConstellationCache(RedisCacheManager redisCacheManager) {
-        this.redisCacheManager = redisCacheManager;
+    public ConstellationCache(@Qualifier("constellationTemplate") ReactiveRedisTemplate<String, Constellation> constellationTemplate) {
+        this.constellationTemplate = constellationTemplate;
     }
 
     @Override
     public Mono<Constellation> get(Integer id) {
-        Cache constellationCache = redisCacheManager.getCache("constellations");
-        Optional<Constellation> constellation = Optional.empty();
-
-        if(Objects.nonNull(constellationCache)) {
-            constellation = Optional.ofNullable(constellationCache.get(id, Constellation.class));
-        }
-
-        if(constellation.isPresent()) {
-            return Mono.just(constellation.get());
-        }
-
-        return Mono.empty();
+        return constellationTemplate.opsForValue().get("constellations::".concat(id.toString()));
     }
 
     @Override
-    public void put(Integer id, Constellation constellation) {
-        redisCacheManager.getCache("constellations").put(id, constellation);
+    public void put(Constellation constellation) {
+        Mono<Boolean> result = constellationTemplate.opsForValue().set("constellations::".concat(constellation.getId().toString()),
+                constellation, Duration.ofMinutes(5l));
+        result.subscribe();
     }
 
 }

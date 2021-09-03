@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 @RequestMapping("api/v1/universes")
 public class UniverseController {
 
+    @Autowired
     private final UniverseService universeService;
 
     @Autowired
@@ -23,13 +25,13 @@ public class UniverseController {
     }
 
     @GetMapping("")
-    public List<Universe> getAllUniverse() {
+    public Flux<Universe> getAllUniverse() {
         return universeService.getAllUniverse();
     }
 
     @GetMapping("/{id}")
-    public Universe getUniverseById(@PathVariable("id") Integer id) {
-        return universeService.getUniverseById(id).block();
+    public Mono<Universe> getUniverseById(@PathVariable("id") Integer id) {
+        return universeService.getUniverseById(id);
     }
 
 }

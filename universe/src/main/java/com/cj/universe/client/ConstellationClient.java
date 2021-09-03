@@ -4,17 +4,13 @@ import com.cj.universe.client.cache.CacheService;
 import com.cj.universe.client.dto.Constellation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.Cache;
-import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class ConstellationClient {
@@ -26,7 +22,7 @@ public class ConstellationClient {
         this.cacheService = cacheService;
     }
 
-    public List<Constellation> getAllConstellations() {
+    public Flux<Constellation> getAllConstellations() {
         var url = UriComponentsBuilder.fromHttpUrl("http://localhost:9094/api/v1")
                 .path("/constellations")
                 .toUriString();
@@ -36,10 +32,7 @@ public class ConstellationClient {
                 .get()
                 .uri(url)
                 .retrieve()
-                .bodyToFlux(Constellation.class)
-                .collectList()
-                .blockOptional()
-                .orElse(List.of());
+                .bodyToFlux(Constellation.class);
     }
 
     public Mono<Constellation> getConstellationById(@NotNull Integer id) {
@@ -54,7 +47,7 @@ public class ConstellationClient {
                 .uri(url)
                 .retrieve()
                 .bodyToMono(Constellation.class)
-                .doOnSuccess(val -> cacheService.put(id, val));
+                .doOnSuccess(cacheService::put);
 
         return cacheService.get(id).switchIfEmpty(constellationService);
     }

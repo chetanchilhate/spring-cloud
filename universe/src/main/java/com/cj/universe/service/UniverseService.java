@@ -7,6 +7,7 @@ import com.cj.universe.client.dto.Galaxy;
 import com.cj.universe.model.Universe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
@@ -28,20 +29,17 @@ public class UniverseService {
         this.constellationClient = constellationClient;
     }
 
-    public List<Universe> getAllUniverse() {
+    public Flux<Universe> getAllUniverse() {
         var galaxies = galaxyClient.getAllGalaxies();
         var constellations = constellationClient.getAllConstellations();
 
-        return IntStream
-                .range(0, constellations.size())
-                .mapToObj(i -> new Universe(galaxies.get(i), constellations.get(i)))
-                .collect(Collectors.toList());
+        return Flux.zip(galaxies, constellations, (galaxy, constellation) -> new Universe(galaxy, constellation));
     }
 
     public Mono<Universe> getUniverseById(Integer id) {
-        Mono<Galaxy> galaxy = galaxyClient.getGalaxyById(id);
-        Mono<Constellation> constellation = constellationClient.getConstellationById(id);
-        return Mono.zip(galaxy, constellation).map((tuple) -> new Universe(tuple.getT1(), tuple.getT2()));
+        var galaxy = galaxyClient.getGalaxyById(id);
+        var constellation = constellationClient.getConstellationById(id);
+        return Mono.zip(galaxy, constellation).map(tuple -> new Universe(tuple.getT1(), tuple.getT2()));
     }
 
 }
