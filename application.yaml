@@ -1,8 +1,8 @@
-eureka:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://dc-service-registry:8761/eureka/
-    instance:
-      hostname: dc-service-registry
+# eureka:
+#     register-with-eureka: true
+#     fetch-registry: true
+#     service-url:
+#       defaultZone: http://dc-service-registry:8761/eureka/
+#     instance:
+#       hostname: dc-service-registry
       
