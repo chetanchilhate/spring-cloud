@@ -15,3 +15,34 @@ spring:
           uri: lb://DEPARTMENT-SERVICE
           predicates:
             - Path=/api/v1/departments/**
+        - id: CONSTELLATION-SERVICE
+          uri: lb://CONSTELLATION-SERVICE
+          predicates:
+            - Path=/api/v1/constellations/**
+        - id: GALAXY-SERVICE
+          uri: lb://GALAXY-SERVICE
+          predicates:
+            - Path=/api/v1/galaxies/**
+        - id: UNIVERSE-SERVICE
+          uri: lb://UNIVERSE-SERVICE
+          predicates:
+            - Path=/api/v1/universes/**
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+---
+
+spring:
+  profiles: docker
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://dc-service-registry:8761/eureka/
