@@ -1,6 +1,7 @@
 package com.cj.constellation.service;
 
 import com.cj.constellation.entity.Constellation;
+import com.cj.constellation.exception.NoSuchElementFoundException;
 import com.cj.constellation.repository.ConstellationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import java.util.List;
 @Transactional
 public class ConstellationService {
 
-    private ConstellationRepository  constellationRepository;
+    private final ConstellationRepository  constellationRepository;
 
     @Autowired
     public ConstellationService(ConstellationRepository constellationRepository) {
@@ -24,12 +25,12 @@ public class ConstellationService {
     }
 
     public Constellation getConstellationById(Integer id) {
-        try {
-            Thread.sleep(id*1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return  constellationRepository.findById(id).orElseThrow();
+//        try {
+//            Thread.sleep(id*1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+        return  constellationRepository.findById(id).orElseThrow(() -> new NoSuchElementFoundException("Constellation with id " + id + " not found"));
     }
 
 }
