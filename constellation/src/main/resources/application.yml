@@ -1,5 +1,10 @@
 server:
-  port: 9094
+  port: 8086
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: ON_PARAM
+    include-exception: false
 
 spring:
   application:
@@ -16,3 +21,19 @@ spring:
     show-sql: true
     open-in-view: false
 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+---
+
+spring:
+  profiles: docker
+  datasource:
+    url: jdbc:mysql://dc-mysql:3306/spring-db
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://dc-service-registry:8761/eureka/
