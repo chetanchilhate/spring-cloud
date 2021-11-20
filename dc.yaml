@@ -1,0 +1,126 @@
+version: '3.9'
+
+services:
+
+  # redis service
+  dc-redis:
+    container_name: dc-redis
+    image: redis:6.2.5-alpine    
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis-data:/data'
+    healthcheck:
+      test: ["CMD", "redis-cli","ping"]
+ 
+  # mysql service
+  dc-mysql:    
+    container_name: dc-mysql
+    image: mysql:latest  
+    ports:
+      - '3306:3306'
+    # restart: always
+    environment:
+    - MYSQL_ROOT_PASSWORD=toor
+    - MYSQL_DATABASE=spring-db
+    - MYSQL_USER=spring
+    - MYSQL_PASSWORD=spring      
+    volumes:
+      - 'mysql-data:/var/lib/mysql'
+    healthcheck:
+      test: "/usr/bin/mysql --user=spring --password=spring --execute \"SHOW DATABASES;\""
+      interval: 3s
+      timeout: 3s
+      retries: 10      
+
+  # eureka-server
+  dc-service-registry:
+    container_name: dc-service-registry
+    image: service-registry:v1
+    ports:
+    - 8761:8761
+    depends_on:
+      - dc-mysql
+      - dc-redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+ 
+  # cloud gateway   
+  # dc-cloud-gateway:
+  #   container_name: dc-cloud-gateway
+  #   image: cloud-gateway:v1
+  #   ports:
+  #   - 80:9090
+  #   depends_on:      
+  #     - dc-service-registry
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+  # department resource service
+  # dc-department-service:
+  #   container_name: dc-department-service
+  #   image: department-service:v1
+  #   # ports:
+  #   # - 8082:8082
+  #   depends_on:      
+  #     - dc-cloud-gateway
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+  # constellation resource service
+  # dc-constellation-service:
+  #   container_name: dc-constellation-service
+  #   image: constellation:v1
+  #   # ports:
+  #   # - 8086:8086
+  #   depends_on:      
+  #     - dc-cloud-gateway
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8086/actuator/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+  # galaxy resource service
+  # dc-galaxy-service:
+  #   container_name: dc-galaxy-service
+  #   image: galaxy:v1
+  #   # ports:
+  #   # - 8088:8088
+  #   depends_on:      
+  #     - dc-cloud-gateway
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8088/actuator/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+  # universe resource service
+  # dc-universe-service:
+  #   container_name: dc-universe-service
+  #   image: universe:v1
+  #   # ports:
+  #   # - 8090:8090
+  #   depends_on:      
+  #     - dc-cloud-gateway
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8090/actuator/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3            
+
+
+volumes:
+  redis-data:
+    external: true
+  mysql-data:
+    external: true 
