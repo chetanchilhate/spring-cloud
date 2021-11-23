@@ -1,2 +1,74 @@
 server:
-  port: 9096
+  port: 8090
+
+logging:
+  level:
+#    io:
+#      lettuce: trace
+    org:
+      springframework:
+        web: trace
+
+spring:
+  application:
+    name: UNIVERSE-SERVICE
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 500
+#    password : v6er4d64v6115vb3134xv41x3
+    clientName: universe-svc
+    connectTimeout: 10
+
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            authorization-grant-type: client_credentials
+            client-id: springboot
+            client-secret: dbc06f19-a0e5-4ac3-b5c8-d1f12a709da2
+        provider:
+          keycloak:
+            token-uri: http://localhost:8080/auth/realms/spring/protocol/openid-connect/token
+
+
+
+galaxy:
+  url: http://localhost:8088/api/v1
+  endpoint: ${galaxy.url}/galaxies
+
+constellation:
+  url: http://localhost:8086/api/v1
+  endpoint: ${constellation.url}/constellations
+
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
+
+---
+
+spring:
+  profiles: docker
+  redis:
+    host: dc-redis
+    port: 6379
+
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            token-uri: http://keycloak:8080/auth/realms/spring/protocol/openid-connect/token
+
+galaxy:
+  url: http://dc-galaxy-service:8088/api/v1
+
+constellation:
+  url: http://dc-constellation-service:8086/api/v1
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://dc-service-registry:8761/eureka/
